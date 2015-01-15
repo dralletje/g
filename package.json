@@ -1,0 +1,27 @@
+{
+  "name": "g",
+  "version": "1.0.0",
+  "description": "What the g**k?",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dralletje/g.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dralletje/g/issues"
+  },
+  "homepage": "https://github.com/dralletje/g",
+  "dependencies": {
+    "coffee-script": "^1.8.0",
+    "gulp": "^3.8.10",
+    "gulp-coffee": "^2.2.0",
+    "gulp-concat": "^2.4.3",
+    "gulp-less": "^2.0.1",
+    "gulp-plumber": "^0.6.6"
+  }
+}
