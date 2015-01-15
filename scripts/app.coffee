@@ -15,6 +15,8 @@ R3 = 65
 
 startDate = Date.now()
 
+sun = new Planet 2e30, [600,400], [0,0]
+
 #updating drawing function
 drawingisfun = ->
   # Calculate time from start time
@@ -22,9 +24,7 @@ drawingisfun = ->
   context.clearRect 0, 0, my_canvas.width, my_canvas.height
 
   #redraw Sun
-  context.beginPath()
-  context.arc 600, 400, 40, 0, 2 * Math.PI
-  context.stroke()
+  sun.draw(context)
 
   #calc values
   velocity = 0.002 #+(acceleration*c2);

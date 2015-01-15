@@ -20,7 +20,7 @@ gulp.task "less", ->
 gulp.task "coffee", ->
   gulp.src(coffeepath)
   .pipe(plumber())
-  .pipe(coffee())
+  .pipe(coffee(bare: true))
   .pipe(concat("app.js"))
   .pipe(gulp.dest(DIST))
 
