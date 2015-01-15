@@ -2,7 +2,7 @@
 sunSize = 20
 G = 6.67384e-11
 
-timespeed = 1
+timespeed = .1
 timespeed2 = timespeed*timespeed
 
 class Planet
@@ -27,13 +27,13 @@ class Planet
     context.strokeStyle = 'black'
     context.stroke()
 
-    ### Draw speedline
+    # Draw speedline
     context.beginPath()
     context.moveTo(@p[0],@p[1])
-    scale = 50
+    scale = 50 / timespeed
     context.lineTo(@p[0]+(@s[0]*scale),@p[1]+(@s[1]*scale))
     context.strokeStyle = 'red'
-    context.stroke() ###
+    context.stroke()
 
     # Draw acceleration
     context.beginPath()

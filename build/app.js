@@ -5,7 +5,7 @@ sunSize = 20;
 
 G = 6.67384e-11;
 
-timespeed = 1;
+timespeed = .1;
 
 timespeed2 = timespeed * timespeed;
 
@@ -28,15 +28,12 @@ Planet = (function() {
     context.arc(this.p[0], this.p[1], size, 0, 2 * Math.PI);
     context.strokeStyle = 'black';
     context.stroke();
-
-    /* Draw speedline
-    context.beginPath()
-    context.moveTo(@p[0],@p[1])
-    scale = 50
-    context.lineTo(@p[0]+(@s[0]*scale),@p[1]+(@s[1]*scale))
-    context.strokeStyle = 'red'
-    context.stroke()
-     */
+    context.beginPath();
+    context.moveTo(this.p[0], this.p[1]);
+    scale = 50 / timespeed;
+    context.lineTo(this.p[0] + (this.s[0] * scale), this.p[1] + (this.s[1] * scale));
+    context.strokeStyle = 'red';
+    context.stroke();
     context.beginPath();
     context.moveTo(this.p[0], this.p[1]);
     scale = 30e3 / timespeed2;
