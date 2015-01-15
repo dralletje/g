@@ -2,16 +2,16 @@
 sunSize = 20
 G = 6.67384e-11
 
-timespeed = 4
+timespeed = 1
 timespeed2 = timespeed*timespeed
 
 class Planet
-  constructor: (mass, position, speed, name) ->
-    @name = name
+  constructor: (mass, position, speed, watch) ->
+    @watch = watch
     @mass = mass
 
     # Size is (times the mass of the sun) * (pixels per sun)
-    @size = (mass / 10e4) + 30
+    @size = Math.log(mass) * 5 + 10
 
     @p = position
     @s = speed.map((x) -> x*timespeed)
@@ -50,6 +50,7 @@ class Planet
 
   move: ->
     #@log @s
+    if @watch and (Math.random() > 0.95) then console.log @p.map Math.floor
     @p = [@p[0] + @s[0], @p[1] + @s[1]]
 
 
