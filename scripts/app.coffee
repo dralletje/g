@@ -13,10 +13,10 @@ startDate = Date.now()
 
 
 entities = [
-  new Planet 10e8, [300,400], [0,0] # Sun
-  new Planet 10e4, [900,400], [0,-.7] # Second sun
-  new Planet 10, [1100,400], [0,.5]# Planet
-  new Planet 10, [100,400], [0,5]# Planet
+  new Planet 10e7, [400,400], [0,0] # Sun
+  #new Planet 10e4, [900,400], [0,-.7] # Second sun
+  new Planet 10, [200,400], [0,2]# Planet
+  #new Planet 10, [100,400], [0,2]# Planet
 #  new Planet 10e2, [1000,400], [0,.5] # Farest planet
 #  new Planet 4e29, [600+275+65,400], [0,0] # Moon of farest planet
 ]
@@ -26,14 +26,17 @@ entities = [
 drawingisfun = ->
   # Calculate time from start time
   c2 = (Date.now() - startDate) / 100
-  #context.clearRect 0, 0, my_canvas.width, my_canvas.height
+  context.clearRect 0, 0, my_canvas.width, my_canvas.height
 
-  # redraw Sun
-  for entitie in entities
-    entitie.accelerate(entities)
+  cycles = 10
+  for i in [0...cycles]
+    for entitie in entities
+      entitie.accelerate(entities)
+    for entitie in entities
+      entitie.move()
 
+  # redraw
   for entitie in entities
-    entitie.move()
     entitie.draw(context)
 
 runit = setInterval(drawingisfun, 1)

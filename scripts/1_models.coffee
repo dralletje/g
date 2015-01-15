@@ -14,7 +14,7 @@ class Planet
     @size = Math.log(mass) * 5 + 10
 
     @p = position
-    @s = speed.map((x) -> x*timespeed)
+    @s = speed.map (x) -> x * timespeed
     @a = [0,0]
 
   draw: (context) ->
@@ -38,7 +38,7 @@ class Planet
     # Draw acceleration
     context.beginPath()
     context.moveTo(@p[0],@p[1])
-    scale = 30e3 / timespeed2
+    scale = 5000 / timespeed
     context.lineTo(@p[0]+(@a[0]*scale),@p[1]+(@a[1]*scale))
     context.strokeStyle = 'green'
     context.stroke()

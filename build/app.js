@@ -36,7 +36,7 @@ Planet = (function() {
     context.stroke();
     context.beginPath();
     context.moveTo(this.p[0], this.p[1]);
-    scale = 30e3 / timespeed2;
+    scale = 5000 / timespeed;
     context.lineTo(this.p[0] + (this.a[0] * scale), this.p[1] + (this.a[1] * scale));
     context.strokeStyle = 'green';
     return context.stroke();
@@ -118,19 +118,26 @@ rearth = 7;
 
 startDate = Date.now();
 
-entities = [new Planet(10e8, [300, 400], [0, 0]), new Planet(10e4, [900, 400], [0, -.7]), new Planet(10, [1100, 400], [0, .5]), new Planet(10, [100, 400], [0, 5])];
+entities = [new Planet(10e7, [400, 400], [0, 0]), new Planet(10, [200, 400], [0, 2])];
 
 drawingisfun = function() {
-  var c2, entitie, _i, _j, _len, _len1, _results;
+  var c2, cycles, entitie, i, _i, _j, _k, _l, _len, _len1, _len2, _results;
   c2 = (Date.now() - startDate) / 100;
-  for (_i = 0, _len = entities.length; _i < _len; _i++) {
-    entitie = entities[_i];
-    entitie.accelerate(entities);
+  context.clearRect(0, 0, my_canvas.width, my_canvas.height);
+  cycles = 10;
+  for (i = _i = 0; 0 <= cycles ? _i < cycles : _i > cycles; i = 0 <= cycles ? ++_i : --_i) {
+    for (_j = 0, _len = entities.length; _j < _len; _j++) {
+      entitie = entities[_j];
+      entitie.accelerate(entities);
+    }
+    for (_k = 0, _len1 = entities.length; _k < _len1; _k++) {
+      entitie = entities[_k];
+      entitie.move();
+    }
   }
   _results = [];
-  for (_j = 0, _len1 = entities.length; _j < _len1; _j++) {
-    entitie = entities[_j];
-    entitie.move();
+  for (_l = 0, _len2 = entities.length; _l < _len2; _l++) {
+    entitie = entities[_l];
     _results.push(entitie.draw(context));
   }
   return _results;
