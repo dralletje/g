@@ -1,9 +1,6 @@
 getAcceleration = (distance, m2) ->
   G * m2 / (Math.pow(distance, 2))
 
-my_canvas = document.getElementById("canvas")
-context = my_canvas.getContext("2d")
-
 #Remember: .arc(x, y, radius, startAngle, endAngle (2PI))
 acceleration = 0.00002
 rearth = 7
@@ -11,32 +8,40 @@ rearth = 7
 
 startDate = Date.now()
 
+normalize = (v, times) ->
+  length = Math.sqrt v.reduce (p, x) ->
+    p + x*x
+  , 0
+  v = v.map (x) ->
+    x / length
 
-entities = [
-  new Planet 10e7, [400,400], [0,0] # Sun
-  #new Planet 10e4, [900,400], [0,-.7] # Second sun
-  new Planet 10, [200,400], [0,2]# Planet
-  #new Planet 10, [100,400], [0,2]# Planet
-#  new Planet 10e2, [1000,400], [0,.5] # Farest planet
-#  new Planet 4e29, [600+275+65,400], [0,0] # Moon of farest planet
+  if times?
+    v.map (x) -> x*times
+  else
+    v
+
+planets = [
+  [10e7, [0,0], [0,0]] # Sun
+  [0, [400,0], normalize([0,1], 1.5)] # Planet
+  [0, [400,0], normalize([.6,.4], 1.5)]  # Planet
+  [0, [400,0], normalize([-1.3,-1.2], 1.5)] # Planet
 ]
 
+###
+planets = [
+  [10e7, [0,0], [0,-1.5]] # Sun
+  [10e7, [300,0], [0,1.5]] # Sun
+  [10e3, [600,0], [0,1.2]]  # Planet
+  #[10e4, [400,0], [0,-1]]  # Planet
+]
+###
 
-#updating drawing function
-drawingisfun = ->
-  # Calculate time from start time
-  c2 = (Date.now() - startDate) / 100
-  context.clearRect 0, 0, my_canvas.width, my_canvas.height
+universe = new Universe
+  timespeed: 10e-3
 
-  cycles = 10
-  for i in [0...cycles]
-    for entitie in entities
-      entitie.accelerate(entities)
-    for entitie in entities
-      entitie.move()
+for planetArgs in planets
+  universe.addPlanet planetArgs...
 
-  # redraw
-  for entitie in entities
-    entitie.draw(context)
-
-runit = setInterval(drawingisfun, 1)
+canvas = new Canvas (document.getElementById 'canvas')
+canvas.origin [400, 400]
+universe.loop canvas

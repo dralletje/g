@@ -1,91 +1,134 @@
-var G, Planet, sunSize, timespeed, timespeed2,
-  __slice = [].slice;
 
-sunSize = 20;
+/*
+A place to draw on with vectors
+ */
+var Canvas;
 
-G = 6.67384e-11;
-
-timespeed = .1;
-
-timespeed2 = timespeed * timespeed;
-
-Planet = (function() {
-  function Planet(mass, position, speed, watch) {
-    this.watch = watch;
-    this.mass = mass;
-    this.size = Math.log(mass) * 5 + 10;
-    this.p = position;
-    this.s = speed.map(function(x) {
-      return x * timespeed;
-    });
-    this.a = [0, 0];
+Canvas = (function() {
+  function Canvas(canvas_element) {
+    this.el = canvas_element;
+    this.ctx = canvas_element.getContext("2d");
+    this.o = Vector["null"];
   }
 
-  Planet.prototype.draw = function(context) {
-    var scale, size;
-    size = this.size;
-    context.beginPath();
-    context.arc(this.p[0], this.p[1], size, 0, 2 * Math.PI);
-    context.strokeStyle = 'black';
-    context.stroke();
-    context.beginPath();
-    context.moveTo(this.p[0], this.p[1]);
-    scale = 50 / timespeed;
-    context.lineTo(this.p[0] + (this.s[0] * scale), this.p[1] + (this.s[1] * scale));
-    context.strokeStyle = 'red';
-    context.stroke();
-    context.beginPath();
-    context.moveTo(this.p[0], this.p[1]);
-    scale = 5000 / timespeed;
-    context.lineTo(this.p[0] + (this.a[0] * scale), this.p[1] + (this.a[1] * scale));
-    context.strokeStyle = 'green';
-    return context.stroke();
+  Canvas.prototype.origin = function(o) {
+    this.o = Vector.fromArray(o);
+    return this;
   };
 
-  Planet.prototype.log = function() {
-    var args;
-    args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-    return console.log.apply(console, [this.name + ':'].concat(__slice.call(args)));
+  Canvas.prototype.linecolor = function(color) {
+    this.ctx.strokeStyle = color;
+    return this;
+  };
+
+  Canvas.prototype.linewidth = function(width) {
+    this.ctx.lineWidth = '3';
+    return this;
+  };
+
+  Canvas.prototype._fromOrigin = function(p) {
+    p = p instanceof Array ? Vector.fromArray(p) : p;
+    return this.o.plus(p);
+  };
+
+  Canvas.prototype.circle = function(p, r) {
+    var p_;
+    this.ctx.beginPath();
+    p_ = this._fromOrigin(p);
+    this.ctx.arc(p_.x, p_.y, r, 0, 2 * Math.PI);
+    this.ctx.stroke();
+    return this;
+  };
+
+  Canvas.prototype.line = function(from, to) {
+    var from_, to_;
+    this.ctx.beginPath();
+    from_ = this._fromOrigin(from);
+    to_ = this._fromOrigin(to);
+    this.ctx.moveTo(from_.x, from_.y);
+    this.ctx.lineTo(to_.x, to_.y);
+    this.ctx.stroke();
+    return this;
+  };
+
+  Canvas.prototype.clear = function(color) {
+    if (color == null) {
+      color = 'rgba(255,255,255,1)';
+    }
+    this.ctx.fillStyle = color;
+    return this.ctx.fillRect(0, 0, this.el.width, this.el.height);
+  };
+
+  return Canvas;
+
+})();
+
+
+/*
+A planet, floating around in the universe.
+Pulled by his friends and pushed by love.
+ */
+var Planet;
+
+Planet = (function() {
+  function Planet(mass, position, speed, timespeed) {
+    if (position instanceof Array) {
+      position = Vector.fromArray(position);
+    }
+    if (speed instanceof Array) {
+      speed = Vector.fromArray(speed);
+    }
+    if (!(position instanceof Vector)) {
+      throw new TypeError('Position should be a Vector');
+    }
+    if (!(speed instanceof Vector)) {
+      throw new TypeError('Speed should be a Vector');
+    }
+    this.timespeed = timespeed;
+    this.timespeed2 = timespeed * timespeed;
+    this.mass = mass;
+    this.p = position;
+    this.s = speed.multiply(this.timespeed);
+    this.a = Vector["null"];
+    this.size = mass < 1 ? 10 : Math.log(mass) * 5 + 10;
+  }
+
+  Planet.prototype.draw = function(canvas) {
+    var acceleration_to, scale, speed_to;
+    canvas.linewidth('2').linecolor('black').circle(this.p, this.size).circle(this.p, 5);
+    canvas.linewidth('3');
+    scale = 50 / this.timespeed;
+    speed_to = this.p.plus(this.s.multiply(scale));
+    canvas.linecolor('red').line(this.p, speed_to);
+    scale = 10000 / this.timespeed2;
+    acceleration_to = this.p.plus(this.a.multiply(scale));
+    return canvas.linecolor('green').line(this.p, acceleration_to);
   };
 
   Planet.prototype.move = function() {
-    if (this.watch && (Math.random() > 0.95)) {
-      console.log(this.p.map(Math.floor));
-    }
-    return this.p = [this.p[0] + this.s[0], this.p[1] + this.s[1]];
+    return this.p = this.p.plus(this.s);
   };
 
   Planet.prototype.accelerate = function(entities) {
-    var a;
-    a = entities.filter((function(_this) {
+    this.a = entities.filter((function(_this) {
       return function(e) {
         return e !== _this;
       };
     })(this)).map((function(_this) {
       return function(entitie) {
-        var r2, scaleDirection, scaleForce, t, x, y;
-        x = entitie.p[0] - _this.p[0];
-        y = entitie.p[1] - _this.p[1];
-        r2 = x * x + y * y;
+        var dp, force, r, r2;
+        dp = entitie.p.minus(_this.p);
+        r2 = dp.size2();
         if (r2 === 0) {
-          _this.log('Null!');
-          return [0, 0];
+          return Vector["null"];
         }
-        scaleDirection = 1 / Math.sqrt(r2);
-        scaleForce = entitie.mass / r2;
-        return t = [x, y].map(function(x) {
-          return x * scaleDirection;
-        }).map(function(x) {
-          return x * scaleForce;
-        });
+        r = Math.sqrt(r2);
+        force = entitie.mass / r2;
+        return dp.divide(r).multiply(force);
       };
     })(this)).reduce(function(p, n) {
-      return [p[0] + n[0], p[1] + n[1]];
-    }, [0, 0]);
-    a = a.map(function(x) {
-      return x / 10e4 * timespeed2;
-    });
-    a = a.map(function(x) {
+      return p.plus(n);
+    }, Vector["null"]).divide(10e4).multiply(this.timespeed2).map(function(x) {
       var m;
       m = .1;
       if (x > 0) {
@@ -94,23 +137,176 @@ Planet = (function() {
         return Math.max(-m, x);
       }
     });
-    this.a = a;
-    return this.s = [this.s[0] + a[0], this.s[1] + a[1]];
+    return this.s = this.s.plus(this.a);
   };
 
   return Planet;
 
 })();
 
-var acceleration, context, drawingisfun, entities, getAcceleration, my_canvas, rearth, runit, startDate;
+
+/*
+Represents a universe with planets floating around in it..
+Floaty float.. floaty float...
+ */
+var Universe;
+
+Universe = (function() {
+  function Universe(options) {
+    this.timespeed = options.timespeed;
+    if (this.imespeed == null) {
+      this.imespeed = 1;
+    }
+    this.planets = [];
+    this.origin = Vector["null"];
+  }
+
+  Universe.prototype.addPlanet = function(mass, position, speed) {
+    var planet;
+    planet = new Planet(mass, position, speed, this.timespeed);
+    return this.planets.push(planet);
+  };
+
+  Universe.prototype.run = function(t) {
+    var i, planet, _i, _j, _len, _ref, _results;
+    _results = [];
+    for (i = _i = 0; 0 <= t ? _i < t : _i > t; i = 0 <= t ? ++_i : --_i) {
+      _ref = this.planets;
+      for (_j = 0, _len = _ref.length; _j < _len; _j++) {
+        planet = _ref[_j];
+        planet.accelerate(this.planets);
+      }
+      _results.push((function() {
+        var _k, _len1, _ref1, _results1;
+        _ref1 = this.planets;
+        _results1 = [];
+        for (_k = 0, _len1 = _ref1.length; _k < _len1; _k++) {
+          planet = _ref1[_k];
+          _results1.push(planet.move());
+        }
+        return _results1;
+      }).call(this));
+    }
+    return _results;
+  };
+
+  Universe.prototype.draw = function(canvas) {
+    var planet, _i, _len, _ref, _results;
+    _ref = this.planets;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      planet = _ref[_i];
+      _results.push(planet.draw(canvas));
+    }
+    return _results;
+  };
+
+  Universe.prototype.loop = function(canvas, speed) {
+    var history;
+    if (speed == null) {
+      speed = 10;
+    }
+    history = Date.now();
+    return setInterval((function(_this) {
+      return function() {
+        var seconds;
+        seconds = Date.now() - history;
+        history = Date.now();
+        canvas.clear();
+        _this.run(seconds * speed);
+        return _this.draw(canvas);
+      };
+    })(this), 1);
+  };
+
+  return Universe;
+
+})();
+
+
+/*
+Represents a Vector in 2D space
+---
+All methods on a vector are pure, a vector is immutable.
+ */
+var Vector;
+
+Vector = (function() {
+  function Vector(x, y) {
+    if (Number.isNaN(x) || Number.isNaN(y)) {
+      throw new TypeError("Can\'t handle NaN: (" + x + ", " + y + ")");
+    }
+    if (!(this instanceof Vector)) {
+      return new Vector(x, y);
+    }
+    this.x = x;
+    this.y = y;
+  }
+
+  Vector.fromArray = function(array) {
+    return new Vector(array[0], array[1]);
+  };
+
+  Vector["null"] = Vector.fromArray([0, 0]);
+
+  Vector.prototype.toArray = function() {
+    return [this.x, this.y];
+  };
+
+  Vector.prototype.map = function(fn) {
+    return new Vector(fn(this.x), fn(this.y));
+  };
+
+  Vector.prototype.zipWith = function(input, fn) {
+    var v;
+    v = input instanceof Vector ? input : {
+      x: input,
+      y: input
+    };
+    return new Vector(fn(this.x, v.x), fn(this.y, v.y));
+  };
+
+  Vector.prototype.plus = function(input) {
+    return this.zipWith(input, function(x, y) {
+      return x + y;
+    });
+  };
+
+  Vector.prototype.minus = function(input) {
+    return this.zipWith(input, function(x, y) {
+      return x - y;
+    });
+  };
+
+  Vector.prototype.multiply = function(input) {
+    return this.zipWith(input, function(x, y) {
+      return x * y;
+    });
+  };
+
+  Vector.prototype.divide = function(input) {
+    return this.zipWith(input, function(x, y) {
+      return x / y;
+    });
+  };
+
+  Vector.prototype.size2 = function() {
+    return this.x * this.x + this.y * this.y;
+  };
+
+  Vector.prototype.size = function() {
+    return Math.sqrt(this.size2());
+  };
+
+  return Vector;
+
+})();
+
+var acceleration, canvas, getAcceleration, normalize, planetArgs, planets, rearth, startDate, universe, _i, _len;
 
 getAcceleration = function(distance, m2) {
   return G * m2 / (Math.pow(distance, 2));
 };
-
-my_canvas = document.getElementById("canvas");
-
-context = my_canvas.getContext("2d");
 
 acceleration = 0.00002;
 
@@ -118,29 +314,46 @@ rearth = 7;
 
 startDate = Date.now();
 
-entities = [new Planet(10e7, [400, 400], [0, 0]), new Planet(10, [200, 400], [0, 2])];
-
-drawingisfun = function() {
-  var c2, cycles, entitie, i, _i, _j, _k, _l, _len, _len1, _len2, _results;
-  c2 = (Date.now() - startDate) / 100;
-  context.clearRect(0, 0, my_canvas.width, my_canvas.height);
-  cycles = 10;
-  for (i = _i = 0; 0 <= cycles ? _i < cycles : _i > cycles; i = 0 <= cycles ? ++_i : --_i) {
-    for (_j = 0, _len = entities.length; _j < _len; _j++) {
-      entitie = entities[_j];
-      entitie.accelerate(entities);
-    }
-    for (_k = 0, _len1 = entities.length; _k < _len1; _k++) {
-      entitie = entities[_k];
-      entitie.move();
-    }
+normalize = function(v, times) {
+  var length;
+  length = Math.sqrt(v.reduce(function(p, x) {
+    return p + x * x;
+  }, 0));
+  v = v.map(function(x) {
+    return x / length;
+  });
+  if (times != null) {
+    return v.map(function(x) {
+      return x * times;
+    });
+  } else {
+    return v;
   }
-  _results = [];
-  for (_l = 0, _len2 = entities.length; _l < _len2; _l++) {
-    entitie = entities[_l];
-    _results.push(entitie.draw(context));
-  }
-  return _results;
 };
 
-runit = setInterval(drawingisfun, 1);
+planets = [[10e7, [0, 0], [0, 0]], [0, [400, 0], normalize([0, 1], 1.5)], [0, [400, 0], normalize([.6, .4], 1.5)], [0, [400, 0], normalize([-1.3, -1.2], 1.5)]];
+
+
+/*
+planets = [
+  [10e7, [0,0], [0,-1.5]] # Sun
+  [10e7, [300,0], [0,1.5]] # Sun
+  [10e3, [600,0], [0,1.2]]  # Planet
+   *[10e4, [400,0], [0,-1]]  # Planet
+]
+ */
+
+universe = new Universe({
+  timespeed: 10e-3
+});
+
+for (_i = 0, _len = planets.length; _i < _len; _i++) {
+  planetArgs = planets[_i];
+  universe.addPlanet.apply(universe, planetArgs);
+}
+
+canvas = new Canvas(document.getElementById('canvas'));
+
+canvas.origin([400, 400]);
+
+universe.loop(canvas);
