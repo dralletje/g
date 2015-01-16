@@ -40,6 +40,7 @@ class Universe
 
       # Clear the canvas (or dont :-D)
       canvas.clear()
+      #canvas.clear('rgba(255,255,255,.01)')
 
       # run the cycle for every lost millisecond
       @run seconds * speed
