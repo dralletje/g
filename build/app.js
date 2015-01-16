@@ -285,9 +285,13 @@ Vector = (function() {
   };
 
   Vector.prototype.divide = function(input) {
-    return this.zipWith(input, function(x, y) {
-      return x / y;
-    });
+    if (input instanceof Vector) {
+      return this.zipWith(input, function(x, y) {
+        return x / y;
+      });
+    } else {
+      return this.multiply(1 / input);
+    }
   };
 
   Vector.prototype.size2 = function() {
@@ -296,6 +300,10 @@ Vector = (function() {
 
   Vector.prototype.size = function() {
     return Math.sqrt(this.size2());
+  };
+
+  Vector.prototype.norm = function() {
+    return this.divide(this.size);
   };
 
   return Vector;

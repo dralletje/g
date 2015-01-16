@@ -51,7 +51,10 @@ class Vector
     @zipWith input, (x,y) -> x * y
 
   divide: (input) ->
-    @zipWith input, (x,y) -> x / y
+    if input instanceof Vector
+      @zipWith input, (x,y) -> x / y
+    else
+      @multiply(1 / input)
 
 
   # Basic Vector functions
@@ -60,3 +63,6 @@ class Vector
 
   size: -> # Not squared size
     Math.sqrt @size2()
+
+  norm: ->
+    @divide @size
