@@ -1,13 +1,6 @@
 getAcceleration = (distance, m2) ->
   G * m2 / (Math.pow(distance, 2))
 
-#Remember: .arc(x, y, radius, startAngle, endAngle (2PI))
-acceleration = 0.00002
-rearth = 7
-
-
-startDate = Date.now()
-
 normalize = (v, times) ->
   length = Math.sqrt v.reduce (p, x) ->
     p + x*x

@@ -302,17 +302,11 @@ Vector = (function() {
 
 })();
 
-var acceleration, canvas, getAcceleration, normalize, planetArgs, planets, rearth, startDate, universe, _i, _len;
+var canvas, getAcceleration, normalize, planetArgs, planets, universe, _i, _len;
 
 getAcceleration = function(distance, m2) {
   return G * m2 / (Math.pow(distance, 2));
 };
-
-acceleration = 0.00002;
-
-rearth = 7;
-
-startDate = Date.now();
 
 normalize = function(v, times) {
   var length;
