@@ -1,23 +1,11 @@
 getAcceleration = (distance, m2) ->
   G * m2 / (Math.pow(distance, 2))
 
-normalize = (v, times) ->
-  length = Math.sqrt v.reduce (p, x) ->
-    p + x*x
-  , 0
-  v = v.map (x) ->
-    x / length
-
-  if times?
-    v.map (x) -> x*times
-  else
-    v
-
 planets = [
   [10e7, [0,0], [0,0]] # Sun
-  [0, [400,0], normalize([0,1], 1.5)] # Planet
-  [0, [400,0], normalize([.6,-.4], 1.5)]  # Planet
-  [0, [400,0], normalize([-1.3,-1.2], 1.5)] # Planet
+  [0, [400,0], Vector(0,1).norm().multiply(1.5)] # Planet
+  [0, [400,0], Vector(.6,-.4).norm().multiply(1.5)]  # Planet
+  [0, [400,0], Vector(-1.3,-1.2).norm().multiply(1.5)] # Planet
 ]
 
 ###

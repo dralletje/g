@@ -65,4 +65,4 @@ class Vector
     Math.sqrt @size2()
 
   norm: ->
-    @divide @size
+    @divide @size()

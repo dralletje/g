@@ -303,37 +303,20 @@ Vector = (function() {
   };
 
   Vector.prototype.norm = function() {
-    return this.divide(this.size);
+    return this.divide(this.size());
   };
 
   return Vector;
 
 })();
 
-var canvas, getAcceleration, normalize, planetArgs, planets, universe, _i, _len;
+var canvas, getAcceleration, planetArgs, planets, universe, _i, _len;
 
 getAcceleration = function(distance, m2) {
   return G * m2 / (Math.pow(distance, 2));
 };
 
-normalize = function(v, times) {
-  var length;
-  length = Math.sqrt(v.reduce(function(p, x) {
-    return p + x * x;
-  }, 0));
-  v = v.map(function(x) {
-    return x / length;
-  });
-  if (times != null) {
-    return v.map(function(x) {
-      return x * times;
-    });
-  } else {
-    return v;
-  }
-};
-
-planets = [[10e7, [0, 0], [0, 0]], [0, [400, 0], normalize([0, 1], 1.5)], [0, [400, 0], normalize([.6, -.4], 1.5)], [0, [400, 0], normalize([-1.3, -1.2], 1.5)]];
+planets = [[10e7, [0, 0], [0, 0]], [0, [400, 0], Vector(0, 1).norm().multiply(1.5)], [0, [400, 0], Vector(.6, -.4).norm().multiply(1.5)], [0, [400, 0], Vector(-1.3, -1.2).norm().multiply(1.5)]];
 
 
 /*
