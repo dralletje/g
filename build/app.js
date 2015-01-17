@@ -108,15 +108,17 @@ Planet = (function() {
   };
 
   Planet.prototype.accelerate = function(entities) {
-    var now;
+    var a, now;
     now = performance.now();
-    this.a = entities.filter((function(_this) {
+    a = fast.filter(entities, (function(_this) {
       return function(e) {
         return e !== _this;
       };
-    })(this)).filter(function(e) {
+    })(this));
+    a = fast.filter(a, function(e) {
       return e.mass !== 0;
-    }).map((function(_this) {
+    });
+    a = fast.map(a, (function(_this) {
       return function(entitie) {
         var dp, force, r, r2;
         dp = entitie.p.minus(_this.p);
@@ -128,9 +130,11 @@ Planet = (function() {
         force = entitie.mass / r2;
         return dp.divide(r).multiply(force);
       };
-    })(this)).reduce(function(p, n) {
+    })(this));
+    a = fast.reduce(a, function(p, n) {
       return p.plus(n);
-    }, Vector["null"]).divide(10e4).multiply(this.timespeed2).map(function(x) {
+    }, Vector["null"]);
+    this.a = a.divide(10e4).multiply(this.timespeed2).map(function(x) {
       var m;
       m = .1;
       if (x > 0) {

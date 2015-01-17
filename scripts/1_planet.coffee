@@ -57,15 +57,15 @@ class Planet
 
   accelerate: (entities) ->
     now = performance.now()
-    @a = entities.filter (e) =>
+    a = fast.filter entities, (e) =>
       # Do not take in account yourself :p
       e isnt this
 
-    .filter (e) ->
+    a = fast.filter a, (e) ->
       # Dont even try to calculate massless bodies
       e.mass isnt 0
 
-    .map (entitie) =>
+    a = fast.map a, (entitie) =>
       # Calculate the acceleration to every other planet
       dp = entitie.p.minus @p
       r2 = dp.size2()
@@ -79,14 +79,15 @@ class Planet
       # Determine direction vector and multiply it by the force
       dp.divide(r).multiply(force)
 
-    .reduce (p, n) ->
+    a = fast.reduce a, (p, n) ->
       p.plus n
     , Vector.null
 
-    .divide(10e4).multiply(@timespeed2) # Random compensator
-    .map (x) -> # Prevent too high speeds
-      m = .1
-      if x > 0 then Math.min(m,x) else Math.max(-m,x)
+    @a = a
+      .divide(10e4).multiply(@timespeed2) # Random compensator
+      .map (x) -> # Prevent too high speeds
+        m = .1
+        if x > 0 then Math.min(m,x) else Math.max(-m,x)
 
     console.log 'Got a:', (performance.now() - now)
     @s = @s.plus @a
