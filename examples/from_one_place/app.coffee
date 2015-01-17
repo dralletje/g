@@ -9,10 +9,10 @@ after some time.
 universe = new Universe
   timespeed: 5e-2
 
-# Add the planets to the universe
+# Add the Sun
 universe.addPlanet 10e7, [0,0], [0,0]
-#universe.addPlanet 10e7, [800,0], [0,.5]
 
+# Add 40 planets with no mass
 planets = 40
 for i in [0...planets]
   speed = Vector(
