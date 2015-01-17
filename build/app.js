@@ -109,8 +109,7 @@ Planet = (function() {
   };
 
   Planet.prototype.accelerate = function(entities) {
-    var a, now;
-    now = performance.now();
+    var a;
     a = fast.filter(entities, (function(_this) {
       return function(e) {
         return e !== _this;
@@ -121,30 +120,20 @@ Planet = (function() {
     });
     a = fast.map(a, (function(_this) {
       return function(entitie) {
-        var dp, force, r, r2;
+        var dp, force, r2;
         dp = entitie.p.minus(_this.p);
         r2 = dp.size2();
         if (r2 === 0) {
           return Vector["null"];
         }
-        r = Math.sqrt(r2);
-        force = entitie.mass / r2;
-        return dp.divide(r).multiply(force);
+        force = entitie.mass / (r2 * Math.sqrt(r2));
+        return dp.multiply(force);
       };
     })(this));
     a = fast.reduce(a, function(p, n) {
       return p.plus(n);
     }, Vector["null"]);
-    this.a = a.divide(10e4).multiply(this.timespeed2).map(function(x) {
-      var m;
-      m = .1;
-      if (x > 0) {
-        return Math.min(m, x);
-      } else {
-        return Math.max(-m, x);
-      }
-    });
-    console.log('Got a:', performance.now() - now);
+    this.a = a.multiply(this.timespeed2 / 10e4);
     return this.s = this.s.plus(this.a);
   };
 
@@ -212,7 +201,7 @@ Universe = (function() {
   Universe.prototype.loop = function(canvas, speed) {
     var history;
     if (speed == null) {
-      speed = 1 / 6;
+      speed = 1;
     }
     history = Date.now();
     return setInterval((function(_this) {
@@ -220,7 +209,6 @@ Universe = (function() {
         var seconds;
         seconds = Date.now() - history;
         history = Date.now();
-        canvas.clear();
         _this.run(seconds * speed);
         return _this.draw(canvas);
       };
@@ -335,11 +323,11 @@ universe = new Universe({
 
 universe.addPlanet(10e7, [0, 0], [0, 0]);
 
-planets = 10;
+planets = 40;
 
 for (i = _i = 0; 0 <= planets ? _i < planets : _i > planets; i = 0 <= planets ? ++_i : --_i) {
   speed = Vector(Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)).norm().multiply(1.5);
-  universe.addPlanet(1, [400, 0], speed);
+  universe.addPlanet(0, [400, 0], speed);
 }
 
 canvas = new Canvas(document.getElementById('canvas'));

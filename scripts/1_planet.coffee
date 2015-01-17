@@ -56,7 +56,7 @@ class Planet
 
 
   accelerate: (entities) ->
-    now = performance.now()
+    #now = performance.now()
     a = fast.filter entities, (e) =>
       # Do not take in account yourself :p
       e isnt this
@@ -74,20 +74,19 @@ class Planet
         return Vector.null
 
       # Real distance between the two planets
-      r = Math.sqrt(r2)
-      force = entitie.mass / r2
+      force = entitie.mass / (r2 * Math.sqrt(r2))
       # Determine direction vector and multiply it by the force
-      dp.divide(r).multiply(force)
+      dp.multiply(force)
 
     a = fast.reduce a, (p, n) ->
       p.plus n
     , Vector.null
 
     @a = a
-      .divide(10e4).multiply(@timespeed2) # Random compensator
-      .map (x) -> # Prevent too high speeds
-        m = .1
-        if x > 0 then Math.min(m,x) else Math.max(-m,x)
+      .multiply(@timespeed2 / 10e4) # Random compensator
+      #.map (x) -> # Prevent too high speeds
+      #  m = .1
+      #  if x > 0 then Math.min(m,x) else Math.max(-m,x)
 
-    console.log 'Got a:', (performance.now() - now)
+    #console.log (performance.now() - now)
     @s = @s.plus @a
