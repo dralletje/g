@@ -316,15 +316,11 @@ after some time.
  */
 var canvas, i, planets, speed, universe, _i;
 
-planets = [[], [0, [400, 0], Vector(0, 1).norm().multiply(1.5)], [0, [400, 0], Vector(.6, -.4).norm().multiply(1.5)], [0, [400, 0], Vector(-1.3, -1.2).norm().multiply(1.5)]];
-
 universe = new Universe({
   timespeed: 5e-2
 });
 
-universe.addPlanet(10e7, [0, 0], [0, -.5]);
-
-universe.addPlanet(10e7, [800, 0], [0, .5]);
+universe.addPlanet(10e7, [0, 0], [0, 0]);
 
 planets = 40;
 
