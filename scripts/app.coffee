@@ -14,18 +14,19 @@ planets = [
 
 # Create a universe
 universe = new Universe
-  timespeed: 10e-2
+  timespeed: 5e-2
 
 # Add the planets to the universe
-universe.addPlanet 10e7, [0,0], [0,0]
+universe.addPlanet 10e7, [0,0], [0,-.5]
+universe.addPlanet 10e7, [800,0], [0,.5]
 
-planets = 10
+planets = 40
 for i in [0...planets]
   speed = Vector(
     Math.floor(Math.random()*100-50),
     Math.floor(Math.random()*100-50)
   ).norm().multiply(1.5)
-  universe.addPlanet 1, [400,0], speed
+  universe.addPlanet 0, [400,0], speed
 
 
 canvas = new Canvas (document.getElementById 'canvas')

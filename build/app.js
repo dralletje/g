@@ -96,12 +96,12 @@ Planet = (function() {
 
   Planet.prototype.draw = function(canvas) {
     var scale;
-    canvas.linewidth('2').linecolor('black').circle(this.p, this.size).circle(this.p, 5);
+    canvas.linewidth('2').linecolor('rgba(0,0,0,1)').circle(this.p, this.size).circle(this.p, 5);
     canvas.linewidth('3');
     scale = 50 / this.timespeed;
-    canvas.linecolor('red').line(this.p, this.s.multiply(scale));
-    scale = 10000 / this.timespeed2;
-    return canvas.linecolor('green').line(this.p, this.a.multiply(scale));
+    canvas.linecolor('rgba(255,0,0,1)').line(this.p, this.s.multiply(scale));
+    scale = 1000 / this.timespeed2;
+    return canvas.linecolor('rgba(0,255,0,1)').line(this.p, this.a.multiply(scale));
   };
 
   Planet.prototype.move = function() {
@@ -209,6 +209,7 @@ Universe = (function() {
         var seconds;
         seconds = Date.now() - history;
         history = Date.now();
+        canvas.clear();
         _this.run(seconds * speed);
         return _this.draw(canvas);
       };
@@ -318,10 +319,12 @@ var canvas, i, planets, speed, universe, _i;
 planets = [[], [0, [400, 0], Vector(0, 1).norm().multiply(1.5)], [0, [400, 0], Vector(.6, -.4).norm().multiply(1.5)], [0, [400, 0], Vector(-1.3, -1.2).norm().multiply(1.5)]];
 
 universe = new Universe({
-  timespeed: 10e-2
+  timespeed: 5e-2
 });
 
-universe.addPlanet(10e7, [0, 0], [0, 0]);
+universe.addPlanet(10e7, [0, 0], [0, -.5]);
+
+universe.addPlanet(10e7, [800, 0], [0, .5]);
 
 planets = 40;
 

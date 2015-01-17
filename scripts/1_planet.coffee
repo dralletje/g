@@ -35,7 +35,7 @@ class Planet
     # Draw circle
     canvas
       .linewidth('2')
-      .linecolor('black')
+      .linecolor('rgba(0,0,0,1)') #.linecolor('black')
       .circle(@p, @size)
       .circle(@p, 5) # And one to determine the center
 
@@ -44,11 +44,11 @@ class Planet
 
     # Draw speedline
     scale = 50 / @timespeed
-    canvas.linecolor('red').line(@p, @s.multiply scale)
+    canvas.linecolor('rgba(255,0,0,1)').line(@p, @s.multiply scale)
 
     # Draw acceleration
-    scale = 10000 / @timespeed2
-    canvas.linecolor('green').line(@p, @a.multiply scale)
+    scale = 1000 / @timespeed2
+    canvas.linecolor('rgba(0,255,0,1)').line(@p, @a.multiply scale)
 
   move: ->
     #if @watch and (Math.random() > 0.95) then console.log @p.map Math.floor

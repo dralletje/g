@@ -32,7 +32,7 @@ class Universe
 
 
   loop: (canvas, speed) ->
-    speed ?= 1/6
+    speed ?= 1
     # Acces the canvas drawing context
 
     # Set this out of the loop scope
