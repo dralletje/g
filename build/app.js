@@ -1,6 +1,6 @@
 
 /*
-A place to draw on with vectors
+A place to draw on with vectors.
  */
 var Canvas;
 
@@ -44,7 +44,7 @@ Canvas = (function() {
     var from_, to_;
     this.ctx.beginPath();
     from_ = this._fromOrigin(from);
-    to_ = this._fromOrigin(to);
+    to_ = from_.plus(to);
     this.ctx.moveTo(from_.x, from_.y);
     this.ctx.lineTo(to_.x, to_.y);
     this.ctx.stroke();
@@ -90,19 +90,17 @@ Planet = (function() {
     this.p = position;
     this.s = speed.multiply(this.timespeed);
     this.a = Vector["null"];
-    this.size = mass < 1 ? 10 : Math.log(mass) * 5 + 10;
+    this.size = Math.max(10, Math.log(mass) * 5 + 10);
   }
 
   Planet.prototype.draw = function(canvas) {
-    var acceleration_to, scale, speed_to;
+    var scale;
     canvas.linewidth('2').linecolor('black').circle(this.p, this.size).circle(this.p, 5);
     canvas.linewidth('3');
     scale = 50 / this.timespeed;
-    speed_to = this.p.plus(this.s.multiply(scale));
-    canvas.linecolor('red').line(this.p, speed_to);
+    canvas.linecolor('red').line(this.p, this.s.multiply(scale));
     scale = 10000 / this.timespeed2;
-    acceleration_to = this.p.plus(this.a.multiply(scale));
-    return canvas.linecolor('green').line(this.p, acceleration_to);
+    return canvas.linecolor('green').line(this.p, this.a.multiply(scale));
   };
 
   Planet.prototype.move = function() {
@@ -110,11 +108,15 @@ Planet = (function() {
   };
 
   Planet.prototype.accelerate = function(entities) {
+    var now;
+    now = performance.now();
     this.a = entities.filter((function(_this) {
       return function(e) {
         return e !== _this;
       };
-    })(this)).map((function(_this) {
+    })(this)).filter(function(e) {
+      return e.mass !== 0;
+    }).map((function(_this) {
       return function(entitie) {
         var dp, force, r, r2;
         dp = entitie.p.minus(_this.p);
@@ -137,6 +139,7 @@ Planet = (function() {
         return Math.max(-m, x);
       }
     });
+    console.log('Got a:', performance.now() - now);
     return this.s = this.s.plus(this.a);
   };
 
@@ -204,7 +207,7 @@ Universe = (function() {
   Universe.prototype.loop = function(canvas, speed) {
     var history;
     if (speed == null) {
-      speed = 10;
+      speed = 1 / 6;
     }
     history = Date.now();
     return setInterval((function(_this) {
@@ -310,31 +313,28 @@ Vector = (function() {
 
 })();
 
-var canvas, getAcceleration, planetArgs, planets, universe, _i, _len;
-
-getAcceleration = function(distance, m2) {
-  return G * m2 / (Math.pow(distance, 2));
-};
-
-planets = [[10e7, [0, 0], [0, 0]], [0, [400, 0], Vector(0, 1).norm().multiply(1.5)], [0, [400, 0], Vector(.6, -.4).norm().multiply(1.5)], [0, [400, 0], Vector(-1.3, -1.2).norm().multiply(1.5)]];
-
 
 /*
-planets = [
-  [10e7, [0,0], [0,-1.5]] # Sun
-  [10e7, [300,0], [0,1.5]] # Sun
-  [10e3, [600,0], [0,1.2]]  # Planet
-   *[10e4, [400,0], [0,-1]]  # Planet
-]
+Example showing that three planets (or x planets)
+from the same starting point with the same speed size
+but a different direction will end up on the same point
+after some time.
  */
+var canvas, i, planets, speed, universe, _i;
+
+planets = [[], [0, [400, 0], Vector(0, 1).norm().multiply(1.5)], [0, [400, 0], Vector(.6, -.4).norm().multiply(1.5)], [0, [400, 0], Vector(-1.3, -1.2).norm().multiply(1.5)]];
 
 universe = new Universe({
-  timespeed: 10e-3
+  timespeed: 10e-2
 });
 
-for (_i = 0, _len = planets.length; _i < _len; _i++) {
-  planetArgs = planets[_i];
-  universe.addPlanet.apply(universe, planetArgs);
+universe.addPlanet(10e7, [0, 0], [0, 0]);
+
+planets = 10;
+
+for (i = _i = 0; 0 <= planets ? _i < planets : _i > planets; i = 0 <= planets ? ++_i : --_i) {
+  speed = Vector(Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)).norm().multiply(1.5);
+  universe.addPlanet(1, [400, 0], speed);
 }
 
 canvas = new Canvas(document.getElementById('canvas'));

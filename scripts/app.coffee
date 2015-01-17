@@ -1,27 +1,32 @@
-getAcceleration = (distance, m2) ->
-  G * m2 / (Math.pow(distance, 2))
+###
+Example showing that three planets (or x planets)
+from the same starting point with the same speed size
+but a different direction will end up on the same point
+after some time.
+###
 
 planets = [
-  [10e7, [0,0], [0,0]] # Sun
+  [] # Sun
   [0, [400,0], Vector(0,1).norm().multiply(1.5)] # Planet
   [0, [400,0], Vector(.6,-.4).norm().multiply(1.5)]  # Planet
   [0, [400,0], Vector(-1.3,-1.2).norm().multiply(1.5)] # Planet
 ]
 
-###
-planets = [
-  [10e7, [0,0], [0,-1.5]] # Sun
-  [10e7, [300,0], [0,1.5]] # Sun
-  [10e3, [600,0], [0,1.2]]  # Planet
-  #[10e4, [400,0], [0,-1]]  # Planet
-]
-###
-
+# Create a universe
 universe = new Universe
-  timespeed: 10e-3
+  timespeed: 10e-2
 
-for planetArgs in planets
-  universe.addPlanet planetArgs...
+# Add the planets to the universe
+universe.addPlanet 10e7, [0,0], [0,0]
+
+planets = 10
+for i in [0...planets]
+  speed = Vector(
+    Math.floor(Math.random()*100-50),
+    Math.floor(Math.random()*100-50)
+  ).norm().multiply(1.5)
+  universe.addPlanet 1, [400,0], speed
+
 
 canvas = new Canvas (document.getElementById 'canvas')
 canvas.origin [400, 400]

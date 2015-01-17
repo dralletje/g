@@ -1,5 +1,6 @@
 ###
-A place to draw on with vectors
+A place to draw on with vectors.
+
 ###
 
 class Canvas
@@ -38,7 +39,7 @@ class Canvas
   line: (from, to) ->
     @ctx.beginPath()
     from_ = @_fromOrigin from
-    to_ =  @_fromOrigin to
+    to_ = from_.plus to
     @ctx.moveTo from_.x, from_.y
     @ctx.lineTo to_.x, to_.y
     @ctx.stroke()

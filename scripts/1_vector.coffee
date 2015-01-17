@@ -30,13 +30,13 @@ class Vector
   map: (fn) ->
     new Vector fn(@x), fn(@y)
 
+  # Create a new vector from a function over two vectors
   zipWith: (input, fn) ->
     # if v is not a vector but a value, make it a vector
     v = if input instanceof Vector
         input
       else
         x:input, y:input
-
     new Vector fn(@x, v.x), fn(@y, v.y)
 
 
@@ -54,7 +54,7 @@ class Vector
     if input instanceof Vector
       @zipWith input, (x,y) -> x / y
     else
-      @multiply(1 / input)
+      @multiply(1 / input) # Divide once and multiply the rest, read it was faster
 
 
   # Basic Vector functions
@@ -64,5 +64,5 @@ class Vector
   size: -> # Not squared size
     Math.sqrt @size2()
 
-  norm: ->
+  norm: -> # Create a vector with size 1
     @divide @size()

@@ -11,6 +11,7 @@ class Universe
     @planets = []
     @origin = Vector.null
 
+  # Add a planet to the universe!
   addPlanet: (mass, position, speed) ->
     planet = new Planet mass, position, speed, @timespeed
     @planets.push planet
@@ -24,14 +25,17 @@ class Universe
       for planet in @planets
         planet.move()
 
+  # Draw every planet on the canvas
   draw: (canvas) ->
     for planet in @planets
       planet.draw canvas
 
+
   loop: (canvas, speed) ->
-    speed ?= 10
+    speed ?= 1/6
     # Acces the canvas drawing context
 
+    # Set this out of the loop scope
     history = Date.now()
     setInterval =>
       # Calculate time since previous draw (on chrome the average was 6)

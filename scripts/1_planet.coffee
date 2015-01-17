@@ -29,32 +29,26 @@ class Planet
     @a = Vector.null
 
     # Size is a function of the mass, to keep it easy
-    @size = if mass < 1
-      10
-    else
-      Math.log(mass) * 5 + 10
+    @size = Math.max 10, (Math.log(mass) * 5 + 10)
 
   draw: (canvas) ->
     # Draw circle
-
     canvas
       .linewidth('2')
       .linecolor('black')
       .circle(@p, @size)
-      .circle(@p, 5)
+      .circle(@p, 5) # And one to determine the center
 
 
     canvas.linewidth('3')
 
     # Draw speedline
     scale = 50 / @timespeed
-    speed_to = @p.plus (@s.multiply scale)
-    canvas.linecolor('red').line(@p, speed_to)
+    canvas.linecolor('red').line(@p, @s.multiply scale)
 
     # Draw acceleration
     scale = 10000 / @timespeed2
-    acceleration_to = @p.plus (@a.multiply scale)
-    canvas.linecolor('green').line(@p, acceleration_to)
+    canvas.linecolor('green').line(@p, @a.multiply scale)
 
   move: ->
     #if @watch and (Math.random() > 0.95) then console.log @p.map Math.floor
@@ -62,9 +56,14 @@ class Planet
 
 
   accelerate: (entities) ->
+    now = performance.now()
     @a = entities.filter (e) =>
       # Do not take in account yourself :p
       e isnt this
+
+    .filter (e) ->
+      # Dont even try to calculate massless bodies
+      e.mass isnt 0
 
     .map (entitie) =>
       # Calculate the acceleration to every other planet
@@ -74,6 +73,7 @@ class Planet
       if r2 is 0 # Problems with dividing by zero
         return Vector.null
 
+      # Real distance between the two planets
       r = Math.sqrt(r2)
       force = entitie.mass / r2
       # Determine direction vector and multiply it by the force
@@ -88,4 +88,5 @@ class Planet
       m = .1
       if x > 0 then Math.min(m,x) else Math.max(-m,x)
 
+    console.log 'Got a:', (performance.now() - now)
     @s = @s.plus @a
