@@ -5,23 +5,27 @@ from the same starting point with the same speed size
 but a different direction will end up on the same point
 after some time.
  */
-var canvas, i, planets, speed, universe, _i;
 
-universe = new Universe({
-  timespeed: 5e-2
-});
+(function() {
+  var canvas, i, planets, speed, universe, _i;
 
-universe.addPlanet(10e7, [0, 0], [0, 0]);
+  universe = new Universe({
+    timespeed: 5e-2
+  });
 
-planets = 40;
+  universe.addPlanet(10e7, [0, 0], [0, 0]);
 
-for (i = _i = 0; 0 <= planets ? _i < planets : _i > planets; i = 0 <= planets ? ++_i : --_i) {
-  speed = Vector(Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)).norm().multiply(1.5);
-  universe.addPlanet(0, [400, 0], speed);
-}
+  planets = 20;
 
-canvas = new Canvas(document.getElementById('canvas'));
+  for (i = _i = 0; 0 <= planets ? _i < planets : _i > planets; i = 0 <= planets ? ++_i : --_i) {
+    speed = vector(Math.floor(Math.random() * 100 - 50), Math.floor(Math.random() * 100 - 50)).norm().multiply(1.5);
+    universe.addPlanet(0, [400, 0], speed);
+  }
 
-canvas.origin([400, 400]);
+  canvas = new Canvas(document.getElementById('canvas'));
 
-universe.loop(canvas);
+  canvas.origin([400, 400]);
+
+  universe.loop(canvas);
+
+}).call(this);

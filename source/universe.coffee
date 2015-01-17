@@ -24,6 +24,8 @@ class Universe
         planet.accelerate(@planets)
       for planet in @planets
         planet.move()
+    return
+
 
   # Draw every planet on the canvas
   draw: (canvas) ->
@@ -32,7 +34,7 @@ class Universe
 
 
   loop: (canvas, speed) ->
-    speed ?= 1
+    speed ?= 2
     # Acces the canvas drawing context
 
     # Set this out of the loop scope

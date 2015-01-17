@@ -4,6 +4,7 @@ Pulled by his friends and pushed by love.
 ###
 
 #G = 6.67384e-11
+G = 10e4
 
 class Planet
   constructor: (mass, position, speed, timespeed) ->
@@ -14,14 +15,15 @@ class Planet
       speed = Vector.fromArray speed
 
     # If there is not way to convert.. die!!! :-D
-    if position not instanceof Vector
+    if not position.x?
       throw new TypeError 'Position should be a Vector'
-    if speed not instanceof Vector
+    if not speed.x?
       throw new TypeError 'Speed should be a Vector'
 
     # Timespeed multiplies all accelerations and speeds
     @timespeed = timespeed
     @timespeed2 = timespeed*timespeed
+    @G = @timespeed2 / G
 
     @mass = mass
     @p = position
@@ -57,15 +59,10 @@ class Planet
 
   accelerate: (entities) ->
     #now = performance.now()
-    a = fast.filter entities, (e) =>
-      # Do not take in account yourself :p
-      e isnt this
+    a = fast.map entities, (entitie) =>
+      if entitie is this or entitie.mass is 0
+        return Vector.null
 
-    a = fast.filter a, (e) ->
-      # Dont even try to calculate massless bodies
-      e.mass isnt 0
-
-    a = fast.map a, (entitie) =>
       # Calculate the acceleration to every other planet
       dp = entitie.p.minus @p
       r2 = dp.size2()
@@ -82,11 +79,5 @@ class Planet
       p.plus n
     , Vector.null
 
-    @a = a
-      .multiply(@timespeed2 / 10e4) # Random compensator
-      #.map (x) -> # Prevent too high speeds
-      #  m = .1
-      #  if x > 0 then Math.min(m,x) else Math.max(-m,x)
-
-    #console.log (performance.now() - now)
+    @a = a.multiply(@G) # Random compensator
     @s = @s.plus @a

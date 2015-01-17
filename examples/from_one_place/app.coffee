@@ -13,9 +13,9 @@ universe = new Universe
 universe.addPlanet 10e7, [0,0], [0,0]
 
 # Add 40 planets with no mass
-planets = 40
+planets = 20
 for i in [0...planets]
-  speed = Vector(
+  speed = vector(
     Math.floor(Math.random()*100-50),
     Math.floor(Math.random()*100-50)
   ).norm().multiply(1.5)

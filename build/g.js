@@ -69,7 +69,9 @@ Canvas = (function() {
 A planet, floating around in the universe.
 Pulled by his friends and pushed by love.
  */
-var Planet;
+var G, Planet;
+
+G = 10e4;
 
 Planet = (function() {
   function Planet(mass, position, speed, timespeed) {
@@ -79,14 +81,15 @@ Planet = (function() {
     if (speed instanceof Array) {
       speed = Vector.fromArray(speed);
     }
-    if (!(position instanceof Vector)) {
+    if (position.x == null) {
       throw new TypeError('Position should be a Vector');
     }
-    if (!(speed instanceof Vector)) {
+    if (speed.x == null) {
       throw new TypeError('Speed should be a Vector');
     }
     this.timespeed = timespeed;
     this.timespeed2 = timespeed * timespeed;
+    this.G = this.timespeed2 / G;
     this.mass = mass;
     this.p = position;
     this.s = speed.multiply(this.timespeed);
@@ -110,17 +113,12 @@ Planet = (function() {
 
   Planet.prototype.accelerate = function(entities) {
     var a;
-    a = fast.filter(entities, (function(_this) {
-      return function(e) {
-        return e !== _this;
-      };
-    })(this));
-    a = fast.filter(a, function(e) {
-      return e.mass !== 0;
-    });
-    a = fast.map(a, (function(_this) {
+    a = fast.map(entities, (function(_this) {
       return function(entitie) {
         var dp, force, r2;
+        if (entitie === _this || entitie.mass === 0) {
+          return Vector["null"];
+        }
         dp = entitie.p.minus(_this.p);
         r2 = dp.size2();
         if (r2 === 0) {
@@ -133,7 +131,7 @@ Planet = (function() {
     a = fast.reduce(a, function(p, n) {
       return p.plus(n);
     }, Vector["null"]);
-    this.a = a.multiply(this.timespeed2 / 10e4);
+    this.a = a.multiply(this.G);
     return this.s = this.s.plus(this.a);
   };
 
@@ -165,26 +163,19 @@ Universe = (function() {
   };
 
   Universe.prototype.run = function(t) {
-    var i, planet, _i, _j, _len, _ref, _results;
-    _results = [];
+    var i, planet, _i, _j, _k, _len, _len1, _ref, _ref1;
     for (i = _i = 0; 0 <= t ? _i < t : _i > t; i = 0 <= t ? ++_i : --_i) {
       _ref = this.planets;
       for (_j = 0, _len = _ref.length; _j < _len; _j++) {
         planet = _ref[_j];
         planet.accelerate(this.planets);
       }
-      _results.push((function() {
-        var _k, _len1, _ref1, _results1;
-        _ref1 = this.planets;
-        _results1 = [];
-        for (_k = 0, _len1 = _ref1.length; _k < _len1; _k++) {
-          planet = _ref1[_k];
-          _results1.push(planet.move());
-        }
-        return _results1;
-      }).call(this));
+      _ref1 = this.planets;
+      for (_k = 0, _len1 = _ref1.length; _k < _len1; _k++) {
+        planet = _ref1[_k];
+        planet.move();
+      }
     }
-    return _results;
   };
 
   Universe.prototype.draw = function(canvas) {
@@ -201,7 +192,7 @@ Universe = (function() {
   Universe.prototype.loop = function(canvas, speed) {
     var history;
     if (speed == null) {
-      speed = 1;
+      speed = 2;
     }
     history = Date.now();
     return setInterval((function(_this) {
@@ -226,16 +217,14 @@ Represents a Vector in 2D space
 ---
 All methods on a vector are pure, a vector is immutable.
  */
-var Vector;
+var Vector, vector;
+
+vector = function(x, y) {
+  return new Vector(x, y);
+};
 
 Vector = (function() {
   function Vector(x, y) {
-    if (Number.isNaN(x) || Number.isNaN(y)) {
-      throw new TypeError("Can\'t handle NaN: (" + x + ", " + y + ")");
-    }
-    if (!(this instanceof Vector)) {
-      return new Vector(x, y);
-    }
     this.x = x;
     this.y = y;
   }
@@ -254,13 +243,12 @@ Vector = (function() {
     return new Vector(fn(this.x), fn(this.y));
   };
 
-  Vector.prototype.zipWith = function(input, fn) {
-    var v;
-    v = input instanceof Vector ? input : {
-      x: input,
-      y: input
-    };
-    return new Vector(fn(this.x, v.x), fn(this.y, v.y));
+  Vector.prototype.zipWith = function(v, fn) {
+    if ((v.x == null) || (v.y == null)) {
+      return new Vector(fn(this.x, v), fn(this.y, v));
+    } else {
+      return new Vector(fn(this.x, v.x), fn(this.y, v.y));
+    }
   };
 
   Vector.prototype.plus = function(input) {
