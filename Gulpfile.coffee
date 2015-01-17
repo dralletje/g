@@ -4,6 +4,7 @@ plumber = require("gulp-plumber")
 coffee = require("gulp-coffee")
 less = require("gulp-less")
 concat = require("gulp-concat")
+header = require("gulp-header")
 
 DIST = "build/"
 
@@ -14,15 +15,16 @@ gulp.task "less", ->
   gulp.src(lesspath)
   .pipe(plumber())
   .pipe(less())
-  .pipe(concat("style.css"))
-  .pipe(gulp.dest(DIST))
+  .pipe(concat "style.css")
+  .pipe(gulp.dest DIST)
 
 gulp.task "coffee", ->
   gulp.src(coffeepath)
   .pipe(plumber())
-  .pipe(coffee(bare: true))
-  .pipe(concat("app.js"))
-  .pipe(gulp.dest(DIST))
+  .pipe(coffee bare: true)
+  .pipe(concat "app.js")
+  .pipe(header '"use strict"; \n')
+  .pipe(gulp.dest DIST)
 
 
 # Rerun the task when a file changes

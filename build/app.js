@@ -1,3 +1,4 @@
+"use strict"; 
 
 /*
 A place to draw on with vectors.
