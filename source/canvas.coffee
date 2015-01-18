@@ -49,3 +49,6 @@ class Canvas
     color ?= 'rgba(255,255,255,1)'
     @ctx.fillStyle = color
     @ctx.fillRect 0, 0, @el.width, @el.height
+
+# Export it to the world!
+window.Canvas = Canvas

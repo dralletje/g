@@ -23,7 +23,7 @@ gulp.task "less", ->
 gulp.task "coffee-lib", ->
   gulp.src(coffeepath)
   .pipe(plumber())
-  .pipe(coffee bare: true)
+  .pipe(coffee())
   .pipe(concat "g.js")
   .pipe(header '"use strict"; \n')
   .pipe(gulp.dest DIST)

@@ -81,3 +81,6 @@ class Planet
 
     @a = a.multiply(@G) # Random compensator
     @s = @s.plus @a
+
+# Export it to the world!
+window.Planet = Planet

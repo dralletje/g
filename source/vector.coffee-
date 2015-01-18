@@ -77,3 +77,7 @@ class Vector
 
   norm: -> # Create a vector with size 1
     @divide @size()
+
+# Export it to the world!
+window.VectorMutable = Vector
+window.vectorMutable = vector

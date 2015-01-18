@@ -52,3 +52,6 @@ class Universe
       @run seconds * speed
       @draw canvas
     , 1
+
+# Export it to the world!
+window.Universe = Universe

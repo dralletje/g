@@ -36,8 +36,6 @@ class Vector
       new Vector fn(@x, v.x), fn(@y, v.y)
 
 
-
-
   # Basic mathamatical operations
   plus: (input) ->
     @zipWith input, (x,y) -> x + y
@@ -64,3 +62,7 @@ class Vector
 
   norm: -> # Create a vector with size 1
     @divide @size()
+
+# Export it to the world!
+window.Vector = Vector
+window.vector = vector
