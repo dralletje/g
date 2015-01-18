@@ -33,16 +33,18 @@ class Universe
       planet.draw canvas
 
 
+  # TODO: Split this function up or something, this is ugly
   loop: (canvas, speed) ->
     speed ?= 2
     # Acces the canvas drawing context
 
     # Set this out of the loop scope
-    history = Date.now()
+    history = performance.now()
     setInterval =>
       # Calculate time since previous draw (on chrome the average was 6)
-      seconds = Date.now() - history
-      history = Date.now()
+      seconds = performance.now() - history
+      history = performance.now()
+      seconds = Math.min(seconds, 20) # Max 20 calculations per iteration
 
       # Clear the canvas (or dont :-D)
       canvas.clear()
