@@ -7,11 +7,16 @@ class Canvas
   constructor: (canvas_element) ->
     @el = canvas_element
     @ctx = canvas_element.getContext("2d")
+
     @o = Vector.null
+    @s = 1
 
   # Settings
-  origin: (o) ->
+  origin: (o) -> # Position of the (0,0) on the canvas
     @o = Vector.fromArray o
+    this
+  scale: (x) -> # Every unit is x pixels
+    @s = x
     this
 
   linecolor: (color) ->
@@ -19,27 +24,27 @@ class Canvas
     this
 
   linewidth: (width) ->
-    @ctx.lineWidth = '3'
+    @ctx.lineWidth = width * @s
     this
 
 
   # Internal
-  _fromOrigin: (p) ->
-    p = if p instanceof Array then Vector.fromArray(p) else p
-    @o.plus p
+  _convert: (p) ->
+    p = if (not p.x?) or (not p.y?) then Vector.fromArray(p) else p
+    @o.plus p.multiply(@s)
 
   # Drawing functions
   circle: (p, r) ->
     @ctx.beginPath()
-    p_ = @_fromOrigin p
-    @ctx.arc p_.x, p_.y, r, 0, 2 * Math.PI
+    p_ = @_convert p
+    @ctx.arc p_.x, p_.y, r*@s, 0, 2 * Math.PI
     @ctx.stroke()
     this
 
   line: (from, to) ->
     @ctx.beginPath()
-    from_ = @_fromOrigin from
-    to_ = from_.plus to
+    from_ = @_convert from
+    to_ = from_.plus(to.multiply @s)
     @ctx.moveTo from_.x, from_.y
     @ctx.lineTo to_.x, to_.y
     @ctx.stroke()
