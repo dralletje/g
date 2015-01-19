@@ -21,6 +21,7 @@ class Universe
     @opts =
       speed: opts.speed or 1
       accuracy: opts.accuracy or 1
+      scale: opts.scale or 1
     @opts.speed = @opts.speed / @opts.accuracy
 
     @planets = []
@@ -28,7 +29,22 @@ class Universe
 
   # Add a planet to the universe!
   addPlanet: (mass, position, speed) ->
-    planet = new Planet mass, position, speed, @opts
+    {scale} = @opts
+    scale3 = scale*scale*scale
+
+    # Try to convert from array to vector
+    if position instanceof Array
+      position = Vector.fromArray position
+    if speed instanceof Array
+      speed = Vector.fromArray speed
+
+    # If there is not way to convert.. die!!! :-D
+    if not position.x?
+      throw new TypeError 'Position should be a Vector'
+    if not speed.x?
+      throw new TypeError 'Speed should be a Vector'
+
+    planet = new Planet mass*scale3, position.multiply(scale), speed.multiply(scale), @opts
     @planets.push planet
 
 
@@ -56,7 +72,7 @@ class Universe
 
     # Set this out of the loop scope
     history = performance.now()
-    accuracy = @opts.accuracy
+    {accuracy} = @opts
     setInterval =>
       # Calculate time since previous draw (on chrome the average was 6)
       seconds = performance.now() - history
