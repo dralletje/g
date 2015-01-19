@@ -3,11 +3,8 @@ A planet, floating around in the universe.
 Pulled by his friends and pushed by love.
 ###
 
-#G = 6.67384e-11
-G = 10e4
-
 class Planet
-  constructor: (mass, position, speed, timespeed) ->
+  constructor: (mass, position, speed) ->
     # Try to convert from array to vector
     if position instanceof Array
       position = Vector.fromArray position
@@ -20,14 +17,9 @@ class Planet
     if not speed.x?
       throw new TypeError 'Speed should be a Vector'
 
-    # Timespeed multiplies all accelerations and speeds
-    @timespeed = timespeed
-    @timespeed2 = timespeed*timespeed
-    @G = @timespeed2 / G
-
     @mass = mass
     @p = position
-    @s = speed.multiply @timespeed
+    @s = speed
     @a = Vector.null
 
     # Size is a function of the mass, to keep it easy
@@ -39,7 +31,7 @@ class Planet
       .linewidth('2')
       .linecolor('rgba(0,0,0,1)') #.linecolor('black')
       .circle(@p, @size)
-      .circle(@p, 5) # And one to determine the center
+      .circle(@p, 2/canvas.s) # And one to determine the center
 
 
     canvas.linewidth('3')
@@ -52,12 +44,12 @@ class Planet
     scale = 1000 / @timespeed2
     canvas.linecolor('rgba(0,255,0,1)').line(@p, @a.multiply scale)
 
-  move: ->
+  move: (timespeed) ->
     #if @watch and (Math.random() > 0.95) then console.log @p.map Math.floor
-    @p = @p.plus @s
+    @p = @p.plus @s.multiply(timespeed)
 
 
-  accelerate: (entities) ->
+  accelerate: (entities, timespeed, G) ->
     #now = performance.now()
     a = fast.map entities, (entitie) =>
       if entitie is this or entitie.mass is 0
@@ -79,7 +71,7 @@ class Planet
       p.plus n
     , Vector.null
 
-    @a = a.multiply(@G) # Random compensator
+    @a = a.multiply(timespeed * G) # Random compensator
     @s = @s.plus @a
 
 # Export it to the world!

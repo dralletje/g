@@ -14,6 +14,7 @@ A place to draw on with vectors.
       this.o = Vector["null"];
       this.s = 1;
     }
+<<<<<<< HEAD
 
     Canvas.prototype.origin = function(o) {
       this.o = Vector.fromArray(o);
@@ -72,6 +73,66 @@ A place to draw on with vectors.
 
   })();
 
+=======
+
+    Canvas.prototype.origin = function(o) {
+      this.o = Vector.fromArray(o);
+      return this;
+    };
+
+    Canvas.prototype.scale = function(x) {
+      this.s = x;
+      return this;
+    };
+
+    Canvas.prototype.linecolor = function(color) {
+      this.ctx.strokeStyle = color;
+      return this;
+    };
+
+    Canvas.prototype.linewidth = function(width) {
+      this.ctx.lineWidth = width;
+      return this;
+    };
+
+    Canvas.prototype._convert = function(p) {
+      p = (p.x == null) || (p.y == null) ? Vector.fromArray(p) : p;
+      return this.o.plus(p.multiply(this.s));
+    };
+
+    Canvas.prototype.circle = function(p, r) {
+      var p_;
+      this.ctx.beginPath();
+      p_ = this._convert(p);
+      this.ctx.arc(p_.x, p_.y, r * this.s, 0, 2 * Math.PI);
+      this.ctx.stroke();
+      return this;
+    };
+
+    Canvas.prototype.line = function(from, to) {
+      var from_, to_;
+      this.ctx.beginPath();
+      from_ = this._convert(from);
+      to_ = from_.plus(to.multiply(this.s));
+      this.ctx.moveTo(from_.x, from_.y);
+      this.ctx.lineTo(to_.x, to_.y);
+      this.ctx.stroke();
+      return this;
+    };
+
+    Canvas.prototype.clear = function(color) {
+      if (color == null) {
+        color = 'rgba(255,255,255,1)';
+      }
+      this.ctx.fillStyle = color;
+      return this.ctx.fillRect(0, 0, this.el.width, this.el.height);
+    };
+
+    return Canvas;
+
+  })();
+
+>>>>>>> Better-universe
   window.Canvas = Canvas;
 
 }).call(this);
@@ -83,12 +144,19 @@ Pulled by his friends and pushed by love.
  */
 
 (function() {
+<<<<<<< HEAD
   var G, Planet;
 
   G = 10e4;
 
   Planet = (function() {
     function Planet(mass, position, speed, timespeed) {
+=======
+  var Planet;
+
+  Planet = (function() {
+    function Planet(mass, position, speed) {
+>>>>>>> Better-universe
       if (position instanceof Array) {
         position = Vector.fromArray(position);
       }
@@ -101,19 +169,29 @@ Pulled by his friends and pushed by love.
       if (speed.x == null) {
         throw new TypeError('Speed should be a Vector');
       }
+<<<<<<< HEAD
       this.timespeed = timespeed;
       this.timespeed2 = timespeed * timespeed;
       this.G = this.timespeed2 / G;
       this.mass = mass;
       this.p = position;
       this.s = speed.multiply(this.timespeed);
+=======
+      this.mass = mass;
+      this.p = position;
+      this.s = speed;
+>>>>>>> Better-universe
       this.a = Vector["null"];
       this.size = Math.max(10, Math.log(mass) * 5 + 10);
     }
 
     Planet.prototype.draw = function(canvas) {
       var scale;
+<<<<<<< HEAD
       canvas.linewidth('2').linecolor('rgba(0,0,0,1)').circle(this.p, this.size).circle(this.p, 5);
+=======
+      canvas.linewidth('2').linecolor('rgba(0,0,0,1)').circle(this.p, this.size).circle(this.p, 2 / canvas.s);
+>>>>>>> Better-universe
       canvas.linewidth('3');
       scale = 50 / this.timespeed;
       canvas.linecolor('rgba(255,0,0,1)').line(this.p, this.s.multiply(scale));
@@ -121,11 +199,19 @@ Pulled by his friends and pushed by love.
       return canvas.linecolor('rgba(0,255,0,1)').line(this.p, this.a.multiply(scale));
     };
 
+<<<<<<< HEAD
     Planet.prototype.move = function() {
       return this.p = this.p.plus(this.s);
     };
 
     Planet.prototype.accelerate = function(entities) {
+=======
+    Planet.prototype.move = function(timespeed) {
+      return this.p = this.p.plus(this.s.multiply(timespeed));
+    };
+
+    Planet.prototype.accelerate = function(entities, timespeed, G) {
+>>>>>>> Better-universe
       var a;
       a = fast.map(entities, (function(_this) {
         return function(entitie) {
@@ -145,7 +231,11 @@ Pulled by his friends and pushed by love.
       a = fast.reduce(a, function(p, n) {
         return p.plus(n);
       }, Vector["null"]);
+<<<<<<< HEAD
       this.a = a.multiply(this.G);
+=======
+      this.a = a.multiply(timespeed * G);
+>>>>>>> Better-universe
       return this.s = this.s.plus(this.a);
     };
 
@@ -167,6 +257,7 @@ Floaty float.. floaty float...
   var Universe;
 
   Universe = (function() {
+<<<<<<< HEAD
     function Universe(options) {
       this.timespeed = options.timespeed;
       if (this.imespeed == null) {
@@ -234,6 +325,108 @@ Floaty float.. floaty float...
 
   window.Universe = Universe;
 
+=======
+    Universe.SECOND = 1;
+
+    Universe.DAY = 86400;
+
+    Universe.YEAR = 3.15569e7;
+
+    Universe.KG = 1;
+
+    Universe.KG24 = 1e24;
+
+    Universe.M = 1;
+
+    Universe.KM = 1e3;
+
+    Universe.G = 6.67384e-11;
+
+    function Universe(opts) {
+      if (opts == null) {
+        opts = {};
+      }
+      this.opts = {
+        speed: opts.speed || 1,
+        accuracy: opts.accuracy || 1,
+        scale: opts.scale || 1
+      };
+      this.opts.speed = this.opts.speed / this.opts.accuracy;
+      this.planets = [];
+      this.t = 0;
+    }
+
+    Universe.prototype.addPlanet = function(mass, position, speed) {
+      var planet, scale, scale3;
+      scale = this.opts.scale;
+      scale3 = scale * scale * scale;
+      if (position instanceof Array) {
+        position = Vector.fromArray(position);
+      }
+      if (speed instanceof Array) {
+        speed = Vector.fromArray(speed);
+      }
+      if (position.x == null) {
+        throw new TypeError('Position should be a Vector');
+      }
+      if (speed.x == null) {
+        throw new TypeError('Speed should be a Vector');
+      }
+      planet = new Planet(mass * scale3, position.multiply(scale), speed.multiply(scale), this.opts);
+      return this.planets.push(planet);
+    };
+
+    Universe.prototype.run = function(t) {
+      var i, planet, planets, speed, _i, _j, _k, _len, _len1;
+      speed = this.opts.speed;
+      planets = this.planets;
+      for (i = _i = 0; 0 <= t ? _i < t : _i > t; i = 0 <= t ? ++_i : --_i) {
+        for (_j = 0, _len = planets.length; _j < _len; _j++) {
+          planet = planets[_j];
+          planet.accelerate(planets, speed, Universe.G);
+        }
+        for (_k = 0, _len1 = planets.length; _k < _len1; _k++) {
+          planet = planets[_k];
+          planet.move(speed);
+        }
+      }
+    };
+
+    Universe.prototype.draw = function(canvas) {
+      var planet, _i, _len, _ref, _results;
+      _ref = this.planets;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        planet = _ref[_i];
+        _results.push(planet.draw(canvas));
+      }
+      return _results;
+    };
+
+    Universe.prototype.loop = function(canvas) {
+      var accuracy, history;
+      history = performance.now();
+      accuracy = this.opts.accuracy;
+      return setInterval((function(_this) {
+        return function() {
+          var seconds;
+          seconds = performance.now() - history;
+          history = performance.now();
+          seconds = Math.min(seconds, 20);
+          canvas.clear();
+          _this.run(seconds * accuracy);
+          return _this.draw(canvas);
+        };
+      })(this), 1);
+    };
+
+    return Universe;
+
+  })();
+
+  window.Universe = Universe;
+
+>>>>>>> Better-universe
 }).call(this);
 
 
@@ -242,10 +435,17 @@ Represents a Vector in 2D space
 ---
 All methods on a vector are pure, a vector is immutable.
  */
+<<<<<<< HEAD
 
 (function() {
   var Vector, vector;
 
+=======
+
+(function() {
+  var Vector, vector;
+
+>>>>>>> Better-universe
   vector = function(x, y) {
     return new Vector(x, y);
   };

@@ -24,7 +24,7 @@ class Canvas
     this
 
   linewidth: (width) ->
-    @ctx.lineWidth = width * @s
+    @ctx.lineWidth = width # * @s
     this
 
 
