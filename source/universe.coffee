@@ -56,6 +56,7 @@ class Universe
 
     # Set this out of the loop scope
     history = performance.now()
+    accuracy = @opts.accuracy
     setInterval =>
       # Calculate time since previous draw (on chrome the average was 6)
       seconds = performance.now() - history
@@ -67,7 +68,7 @@ class Universe
       #canvas.clear('rgba(255,255,255,.01)')
 
       # run the cycle for every lost millisecond
-      @run seconds
+      @run seconds * accuracy
       @draw canvas
     , 1
 
