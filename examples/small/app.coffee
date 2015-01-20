@@ -27,6 +27,6 @@ universe.addPlanet 0.0735*KG24, [r + 384.4e6*M,0], [0,v+1*KM/SECOND, 0]
 
 
 canvas = new Canvas (document.getElementById 'canvas')
-canvas.origin [400, 400]
-canvas.scale (1/94e6)*1e6
+canvas.origin [10, 10]
+canvas.scale (1/94e7)*8e6
 universe.loop canvas

@@ -31,9 +31,9 @@ after some time.
 
   canvas = new Canvas(document.getElementById('canvas'));
 
-  canvas.origin([400, 400]);
+  canvas.origin([10, 10]);
 
-  canvas.scale((1 / 94e6) * 1e6);
+  canvas.scale((1 / 94e7) * 8e6);
 
   universe.loop(canvas);
 
