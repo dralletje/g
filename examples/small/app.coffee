@@ -5,6 +5,9 @@ but a different direction will end up on the same point
 after some time.
 ###
 
+Universe = require '../../source/universe.coffee'
+Canvas = require '../../source/canvas.coffee'
+
 # Create a universe
 {SECOND, DAY, YEAR, KG, KG24, M, KM} = Universe
 universe = new Universe
@@ -13,7 +16,7 @@ universe = new Universe
   scale: 1e-6
 
 m = 1.989e30*KG
-r = 0.1496e12*M
+r = 0.1496e12*M 
 v = 30*KM/SECOND
 
 # Add the Sun!

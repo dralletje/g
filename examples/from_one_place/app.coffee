@@ -5,6 +5,10 @@ but a different direction will end up on the same point
 after some time.
 ###
 
+
+Universe = require '../../source/universe.coffee'
+Canvas = require '../../source/canvas.coffee'
+
 # Create a universe
 universe = new Universe
   speed: 1e0

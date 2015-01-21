@@ -5,6 +5,9 @@ but a different direction will end up on the same point
 after some time.
 ###
 
+Universe = require '../../source/universe.coffee'
+Canvas = require '../../source/canvas.coffee'
+
 # Create a universe
 {SECOND, DAY, YEAR, KG, KG24, M, KM} = Universe
 universe = new Universe

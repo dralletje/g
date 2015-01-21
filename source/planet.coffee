@@ -4,6 +4,7 @@ Pulled by his friends and pushed by love.
 ###
 
 {Vector, vector} = require './vector-immutable.coffee'
+fast = require 'fast.js'
 
 class Planet
   constructor: (mass, position, speed) ->
