@@ -1,48 +1,49 @@
-gulp = require("gulp")
-plumber = require("gulp-plumber")
+gulp = require 'gulp'
+plumber = require 'gulp-plumber'
 
-coffee = require("gulp-coffee")
-less = require("gulp-less")
-concat = require("gulp-concat")
-header = require("gulp-header")
-rename = require("gulp-rename")
-
-DIST = "build/"
-
-lesspath = "styles/*.css"
-coffeepath = "**/*.coffee"
-
-gulp.task "less", ->
-  gulp.src(lesspath)
-  .pipe(plumber())
-  .pipe(less())
-  .pipe(concat "style.css")
-  .pipe(gulp.dest DIST)
-
-
-# # # # # # # # #
+coffee = require 'gulp-coffee'
+less = require 'gulp-less'
+concat = require 'gulp-concat'
+header = require 'gulp-header'
+rename = require 'gulp-rename'
 source = require 'vinyl-source-stream2'
 browserify = require 'browserify'
 uglify = require 'gulp-uglify'
-dir = './examples/small/'
 
-bundler = browserify dir + 'app.coffee', extension: '.coffee'
-bundler.transform 'coffeeify'
+p = require 'path'
 
-gulp.task "coffee", ->
+DIST = "build/"
+
+libpath = "source/*.coffee"
+examplespath = './examples/**/*.coffee'
+
+bundle = (file) ->
+  dir = p.dirname file
+  bundler = browserify file, extension: '.coffee'
+  bundler.transform 'coffeeify'
+
   bundler.bundle()
     .pipe(source('app.js'))
     .pipe(plumber())
     .pipe(uglify())
     .pipe(gulp.dest(dir))
+    .on 'end', -> console.log 'Ended ' + dir
+
+gulp.task "coffee", ->
+  gulp.src(examplespath, read: no)
+    .on 'readable', ->
+      bundle @read().path
 
 
 # Rerun the task when a file changes
 gulp.task "watch", ->
-  gulp.watch lesspath, ["less"]
-  gulp.watch coffeepath, ["coffee"]
+  gulp.watch libpath, ["coffee"]
+
+  gulp.src(examplespath, read: no).on 'readable', ->
+    {path} = @read()
+    gulp.watch path, ->
+      bundle path
 
 gulp.task "default", [
-  "less"
   "coffee"
 ]
