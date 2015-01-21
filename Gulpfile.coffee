@@ -1,11 +1,6 @@
 gulp = require 'gulp'
 plumber = require 'gulp-plumber'
 
-coffee = require 'gulp-coffee'
-less = require 'gulp-less'
-concat = require 'gulp-concat'
-header = require 'gulp-header'
-rename = require 'gulp-rename'
 source = require 'vinyl-source-stream2'
 browserify = require 'browserify'
 uglify = require 'gulp-uglify'
@@ -27,7 +22,6 @@ bundle = (file) ->
     .pipe(plumber())
     .pipe(uglify())
     .pipe(gulp.dest(dir))
-    .on 'end', -> console.log 'Ended ' + dir
 
 gulp.task "coffee", ->
   gulp.src(examplespath, read: no)
