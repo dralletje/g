@@ -5,7 +5,7 @@ All methods on a vector are pure, a vector is immutable.
 ###
 
 vector = (x,y) ->
-  new Vector x,y
+  new Vector(x,y)
 
 class Vector
   constructor: (x,y) ->
