@@ -3,6 +3,8 @@ A planet, floating around in the universe.
 Pulled by his friends and pushed by love.
 ###
 
+{Vector, vector} = require './vector-immutable.coffee'
+
 class Planet
   constructor: (mass, position, speed) ->
     # Try to convert from array to vector
@@ -75,4 +77,4 @@ class Planet
     @s = @s.plus @a
 
 # Export it to the world!
-window.Planet = Planet
+module.exports = Planet

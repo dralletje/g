@@ -5,7 +5,7 @@ All methods on a vector are pure, a vector is immutable.
 ###
 
 vector = (x,y) ->
-  new Vector(x,y)
+  new Vector x,y
 
 class Vector
   constructor: (x,y) ->
@@ -64,5 +64,6 @@ class Vector
     @divide @size()
 
 # Export it to the world!
-window.Vector = Vector
-window.vector = vector
+module.exports =
+  Vector: Vector
+  vector: vector

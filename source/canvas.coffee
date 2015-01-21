@@ -3,6 +3,8 @@ A place to draw on with vectors.
 
 ###
 
+{Vector} = require './vector-immutable.coffee'
+
 class Canvas
   constructor: (canvas_element) ->
     @el = canvas_element
@@ -56,4 +58,4 @@ class Canvas
     @ctx.fillRect 0, 0, @el.width, @el.height
 
 # Export it to the world!
-window.Canvas = Canvas
+module.exports = Canvas

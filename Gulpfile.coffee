@@ -13,6 +13,39 @@ lesspath = "styles/*.css"
 coffeepath = "source/*.coffee"
 examplespath = "examples/**/*.coffee"
 
+# # # # # # # # #
+sourcemaps = require 'gulp-sourcemaps'
+source = require 'vinyl-source-stream'
+buffer = require 'vinyl-buffer'
+watchify = require 'watchify'
+browserify = require 'browserify'
+
+dir = './examples/small/'
+
+bundler = watchify browserify(dir + 'app.coffee', watchify.args)
+# add any other browserify options or transforms here
+bundler.transform 'coffeeify'
+
+
+bundle = () ->
+  bundler.bundle()
+    .pipe(plumber())
+    .pipe(source('app.js'))
+    # optional, remove if you dont want sourcemaps
+    .pipe(buffer())
+    .pipe(sourcemaps.init({loadMaps: true})) # loads map from browserify file
+    .pipe(sourcemaps.write('./')) # writes .map file
+    #
+    .pipe(gulp.dest(dir))
+
+gulp.task 'js', bundle # so you can run `gulp js` to build the file
+bundler.on 'update', bundle # on any dep update, runs the bundler
+
+
+
+
+
+
 gulp.task "less", ->
   gulp.src(lesspath)
   .pipe(plumber())
@@ -25,7 +58,7 @@ gulp.task "coffee-lib", ->
   .pipe(plumber())
   .pipe(coffee())
   .pipe(concat "g.js")
-  .pipe(header '"use strict"; \n')
+  .pipe(header '"use strict" \n')
   .pipe(gulp.dest DIST)
 
 gulp.task "coffee-examples", ->

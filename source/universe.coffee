@@ -3,6 +3,9 @@ Represents a universe with planets floating around in it..
 Floaty float.. floaty float...
 ###
 
+{Vector, vector} = require './vector-immutable.coffee'
+Planet = require './planet.coffee'
+
 class Universe
   # Some constants about time, mass and length
   @SECOND = 1
@@ -89,4 +92,4 @@ class Universe
     , 1
 
 # Export it to the world!
-window.Universe = Universe
+module.exports = Universe
